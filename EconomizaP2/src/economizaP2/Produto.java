@@ -1,8 +1,14 @@
 package economizaP2;
 
+/*
+ * Classe produto
+ * define o construtor de Produto
+ */
+
 public class Produto {
-	String nome, tipo;
-	double preco;
+	private String nome;
+	private String tipo;
+	private double preco;
 	
 	public Produto(String nome, double preco, String tipo) {
 		this.nome = nome;
@@ -10,6 +16,11 @@ public class Produto {
 		this.tipo = tipo;
 	}
 	
+	@Override
+	public String toString() {
+		return getNome()+"("+getTipo()+"). R$"+getPreco();
+	}
+
 	public String getNome() {
 		return nome;
 	}

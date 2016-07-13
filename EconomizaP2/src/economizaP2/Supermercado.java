@@ -17,16 +17,18 @@ public class Supermercado {
 	private static Scanner sc = new Scanner(System.in);
 	static LeEntradas entrada = new LeEntradas();
 	static Produto produto;
+	private static double totalGasto;
+	public int index = 0;
 
 	/*
 	 * Metodo que faz o cadastro dos produtos(nome, preco, tipo)
+	 * PRECISO ARRUMAR O INDEX
 	 */
-	public static void cadastraProduto() {
+	public void cadastraProduto() {
 		String nome, tipo;
 		double preco;
-
 		String opcao;
-		int index = 0;
+
 
 		do {
 
@@ -54,21 +56,22 @@ public class Supermercado {
 			opcao = sc.nextLine();
 
 			// adiciona o produto no estoque
-
 			estoque[index] = produto;
-			index = index + 1;
-
+			this.index = index + 1;
+			System.out.println(index);
+			System.out.println(produto.toString());
 		} while (opcao.equalsIgnoreCase("sim"));
 
 	}
 
-	public void imprimeProdutos() {
-
+	
+	public boolean verificaEstoqueVazio() {
 		for (int i = 0; i < estoque.length; i++) {
-			if (!estoque[i].getNome().equals(null)) {
-				System.out.println(estoque[i].toString());
+			if (estoque[i] == null) {
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	/*
@@ -78,31 +81,40 @@ public class Supermercado {
 	
 	public void vendeProduto() {
 		String opcao;
+		int quantidadeVenda = 0;
 
 		do {
 			System.out.print("= = = = Venda de Produtos = = = =\n");
 
-			for (int i = 0; i < estoque.length; i++) {
-				
-				if (estoque[i] != null) {
-					//se o estoque nao estiver vazio ele pergunta qual o produto
+			// verifica se o estoque ta vazio
+			if (verificaEstoqueVazio()) {
+				System.out.println("Nao tem produtos cadastrados.");
+
+			} else {
+
+				for (int i = 0; i < estoque.length; i++) {
+
 					System.out.print("Digite o nome do produto: ");
 					String nome = entrada.recebeString();
 
 					// usando o método buscaProdutoPeloNome
 					// se for true imprime o produto
 					if (buscaProdutoPeloNome(nome)) {
+
 						System.out.println("==> " + produto.getNome() + " (" + produto.getTipo() + "). R$" + produto.getPreco());
-						break;
+						System.out.println();
+						System.out.println("Digite a quantidade que quer vender: ");
+						quantidadeVenda = entrada.recebeInteiro();
+
+						totalGasto = calculaTotalGasto(quantidadeVenda);
+						System.out.println("==> Total arrecadado: R$ " + totalGasto);
+						
+
 					} else {
 						System.out.println("==> " + nome + " nao cadastrada no sistema.");
 					}
-				//se tiver vazio o estoque ele imprime que nao tem produtos
-				}else{
-					System.out.println("Não tem produtos cadastrados.");
-					break;
+
 				}
-				
 			}
 
 			System.out.print("Deseja vender outro produto? ");
@@ -111,6 +123,42 @@ public class Supermercado {
 		} while (opcao.equalsIgnoreCase("sim"));
 	}
 
+	
+	
+	/*
+	 * Metodo que calcula e retorna o total gasto Recebe como parametro a
+	 * quantidade de produto que vai ser vendido
+	 */
+	public double calculaTotalGasto(int quantidade) {
+		this.totalGasto = totalGasto + (produto.getPreco() * quantidade);
+		return totalGasto;
+
+	}
+	
+	/*
+	 * Faz a impressao do balanço
+	 */
+	public void imprimeBalanco() {
+
+		System.out.println("= = = = Impressao de Balanco = = = =");
+		System.out.println("Produtos cadastrados:");
+
+		for (int i = 0; i < estoque.length; i++) {
+			if (verificaEstoqueVazio()) {
+				System.out.println("Nenhum produto cadastrado.");
+
+			} else {
+				System.out.println("   " + (i + 1) + ") " + estoque[i].toString());
+			}
+		}
+		System.out.println("==> Total arrecadado: R$ " + totalGasto);
+	}
+
+	
+	/*
+	 * Metodo que faz a busca no array pra verificar
+	 * se o produto ja foi cadastrado 
+	 */
 	public boolean buscaProdutoPeloNome(String nome) {
 
 		for (int i = 0; i < estoque.length; i++) {
